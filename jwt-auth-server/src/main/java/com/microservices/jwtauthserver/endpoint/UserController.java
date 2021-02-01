@@ -1,7 +1,6 @@
-package com.microservices.resourceserver.web.controller;
+package com.microservices.jwtauthserver.endpoint;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,17 +9,11 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/users")
-public class UsersController {
+public class UserController {
 
-    @GetMapping("/principal")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("/me")
     public ResponseEntity<Principal> get(final Principal principal) {
         return ResponseEntity.ok(principal);
     }
 
-    @GetMapping("/status/check")
-    @PreAuthorize("hasRole('ROLE_USER')")
-    public String status() {
-        return "Working";
-    }
 }
