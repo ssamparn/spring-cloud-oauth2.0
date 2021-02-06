@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
@@ -27,6 +28,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                    .anyRequest().authenticated()
+                .and()
+                    .formLogin()
+                    .permitAll()
+                .and()
+                    .logout()
+                    .permitAll();
+
+        http.csrf().disable();
+    }
+
+    @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService())
                 .passwordEncoder(passwordEncoder);
@@ -43,7 +58,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public UserDetailsService userDetailsService() {
         return new InMemoryUserDetailsManager(
                 User.withUsername("admin")
-                        .password(passwordEncoder.encode("$2a$08$qvrzQZ7jJ7oy2p/msL4M0.l83Cd0jNsX6AJUitbgRXGzge4j035ha"))
+                        .password(passwordEncoder.encode("password"))
                         .roles("USER")
                         .build()
         );

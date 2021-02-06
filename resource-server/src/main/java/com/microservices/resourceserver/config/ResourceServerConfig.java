@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
@@ -24,6 +25,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @EnableConfigurationProperties(SecurityProperties.class)
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
+    private static final String RESOURCE_ID = "resource_id";
+
     private TokenStore tokenStore;
 
     private final SecurityProperties securityProperties;
@@ -34,18 +37,24 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Override
     public void configure(final ResourceServerSecurityConfigurer resources) {
-        resources.tokenStore(tokenStore());
+        resources
+            .tokenStore(this.tokenStore())
+            .resourceId(RESOURCE_ID)
+            .stateless(false);
     }
 
-//    @Override
-//    public void configure(HttpSecurity http) throws Exception {
-//        http.authorizeRequests()
-//                .antMatchers(HttpMethod.GET, "/**").access("#oauth2.hasScope('write')")
-//                .antMatchers(HttpMethod.POST, "/**").access("#oauth2.hasScope('write')")
-//                .antMatchers(HttpMethod.PATCH, "/**").access("#oauth2.hasScope('write')")
-//                .antMatchers(HttpMethod.PUT, "/**").access("#oauth2.hasScope('write')")
-//                .antMatchers(HttpMethod.DELETE, "/**").access("#oauth2.hasScope('write')");
-//    }
+    @Override
+    public void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .antMatchers(HttpMethod.GET, "/**").access("#oauth2.hasScope('read') and hasRole('ROLE_USER')")
+                .antMatchers(HttpMethod.POST, "/**").access("#oauth2.hasScope('write')")
+                .antMatchers(HttpMethod.PATCH, "/**").access("#oauth2.hasScope('write')")
+                .antMatchers(HttpMethod.PUT, "/**").access("#oauth2.hasScope('write')")
+                .antMatchers(HttpMethod.DELETE, "/**").access("#oauth2.hasScope('write')")
+        .and()
+                .exceptionHandling()
+                .accessDeniedHandler(new OAuth2AccessDeniedHandler());
+    }
 
     @Bean
     public DefaultTokenServices tokenServices(final TokenStore tokenStore) {
@@ -57,7 +66,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     @Bean
     public TokenStore tokenStore() {
         if (tokenStore == null) {
-            tokenStore = new JwtTokenStore(jwtAccessTokenConverter());
+            tokenStore = new JwtTokenStore(this.jwtAccessTokenConverter());
         }
         return tokenStore;
     }
@@ -65,13 +74,13 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setVerifierKey(getPublicKeyAsString());
+        converter.setVerifierKey(this.getPublicKeyAsString());
         return converter;
     }
 
     private String getPublicKeyAsString() {
         try {
-            return IOUtils.toString(securityProperties.getJwt().getPublicKey().getInputStream(), UTF_8);
+            return IOUtils.toString(this.securityProperties.getJwt().getPublicKey().getInputStream(), UTF_8);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

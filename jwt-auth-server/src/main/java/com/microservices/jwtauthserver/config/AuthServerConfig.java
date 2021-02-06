@@ -27,6 +27,18 @@ import java.security.KeyPair;
 @EnableConfigurationProperties(SecurityProperties.class)
 public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
 
+    private static final String client_id = "oauth2-jwt-client";
+    private static final String client_secret = "client-secret";
+
+    private static final String password_grant_type = "password";
+    private static final String auth_code_grant_type = "authorization_code";
+    private static final String refresh_token_grant_type = "refresh_token";
+    private static final String implicit_grant_type = "implicit";
+
+    private static final String read_scope = "read";
+    private static final String write_scope = "write";
+    private static final String trust_scope = "trust";
+
     private final DataSource dataSource;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -74,7 +86,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
         }
 
         SecurityProperties.JwtProperties jwtProperties = securityProperties.getJwt();
-        KeyPair keyPair = getKeyPair(jwtProperties, keyStoreKeyFactory(jwtProperties));
+        KeyPair keyPair = this.getKeyPair(jwtProperties, this.keyStoreKeyFactory(jwtProperties));
 
         jwtAccessTokenConverter = new JwtAccessTokenConverter();
         jwtAccessTokenConverter.setKeyPair(keyPair);
@@ -84,11 +96,13 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
-                .withClient("oauth2-jwt-client")
-                .secret(passwordEncoder.encode("$2a$08$qvrzQZ7jJ7oy2p/msL4M0.l83Cd0jNsX6AJUitbgRXGzge4j035ha"))
-                .scopes("any")
+                .withClient(client_id)
+                .secret(passwordEncoder.encode(client_secret))
+                .scopes(read_scope, write_scope, trust_scope)
                 .autoApprove(true)
-                .authorizedGrantTypes("password", "refresh_token");
+                .authorizedGrantTypes(auth_code_grant_type, password_grant_type, refresh_token_grant_type, implicit_grant_type)
+                .redirectUris("http://localhost:8081/users/status/check")
+                .accessTokenValiditySeconds(1800);
     }
 
     @Override
