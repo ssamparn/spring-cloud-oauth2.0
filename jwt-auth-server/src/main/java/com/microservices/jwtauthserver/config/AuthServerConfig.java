@@ -84,8 +84,8 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
-                .withClient("test-client")
-                .secret(passwordEncoder.encode("noonewilleverguess"))
+                .withClient("oauth2-jwt-client")
+                .secret(passwordEncoder.encode("$2a$08$qvrzQZ7jJ7oy2p/msL4M0.l83Cd0jNsX6AJUitbgRXGzge4j035ha"))
                 .scopes("any")
                 .autoApprove(true)
                 .authorizedGrantTypes("password", "refresh_token");
