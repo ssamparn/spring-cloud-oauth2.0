@@ -2,6 +2,7 @@ package com.microservices.resourceserver.config;
 
 import org.apache.commons.io.IOUtils;
 import com.microservices.resourceserver.properties.SecurityProperties;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.JwtAccessTokenConverterConfigurer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,13 +11,16 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
+import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 import java.io.IOException;
+import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -83,6 +87,20 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
             return IOUtils.toString(this.securityProperties.getJwt().getPublicKey().getInputStream(), UTF_8);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static class JwtConverter extends DefaultAccessTokenConverter implements JwtAccessTokenConverterConfigurer {
+        @Override
+        public void configure(JwtAccessTokenConverter converter) {
+            converter.setAccessTokenConverter(this);
+        }
+
+        @Override
+        public OAuth2Authentication extractAuthentication(Map<String, ?> authMap) {
+            OAuth2Authentication auth = super.extractAuthentication(authMap);
+            auth.setDetails(authMap);
+            return auth;
         }
     }
 }

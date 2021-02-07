@@ -2,13 +2,16 @@ package com.microservices.resourceserver.web.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.util.Collections;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
@@ -25,7 +28,15 @@ public class UsersController {
     }
 
     @GetMapping("/access-token")
-    public ResponseEntity<Jwt> getAccessToken(@AuthenticationPrincipal Jwt jwt) {
-        return new ResponseEntity<>(jwt, HttpStatus.OK);
+    public ResponseEntity<Map<String, String>> getAccessToken() {
+
+        String accessToken = null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object details = authentication.getDetails();
+        if (details instanceof OAuth2AuthenticationDetails) {
+            OAuth2AuthenticationDetails oAuth2AuthenticationDetails = (OAuth2AuthenticationDetails) details;
+            accessToken = oAuth2AuthenticationDetails.getTokenValue();
+        }
+        return ResponseEntity.ok(Collections.singletonMap("principal", accessToken));
     }
 }
