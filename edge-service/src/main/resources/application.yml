@@ -1,0 +1,24 @@
+server:
+  port: 9090
+
+spring:
+  cloud:
+    gateway:
+      routes[0]:
+        id: users-status-check
+        uri: http://localhost:8081
+        predicates[0]: Path=/users/status/check
+        predicates[1]: Method=GET
+        filters[0]: RemoveRequestHeader=Cookie
+      routes[1]:
+        id: get-user-principal
+        uri: http://localhost:8081
+        predicates[0]: Path=/users/get-principal
+        predicates[1]: Method=GET
+        filters[0]: RemoveRequestHeader=Cookie
+      routes[2]:
+        id: get-access-token
+        uri: http://localhost:8081
+        predicates[0]: Path=/users/access-token
+        predicates[1]: Method=GET
+        filters[0]: RemoveRequestHeader=Cookie
