@@ -2,6 +2,8 @@ package com.microservices.resourceserver.web.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
@@ -15,6 +17,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
+//@Secured("ROLE_USER")
 public class UsersController {
 
     @GetMapping("/status/check")
@@ -27,6 +30,9 @@ public class UsersController {
         return new ResponseEntity<>(principal, HttpStatus.OK);
     }
 
+//    @Secured("ROLE_USER")
+//    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     @GetMapping("/access-token")
     public ResponseEntity<Map<String, String>> getAccessToken() {
 
