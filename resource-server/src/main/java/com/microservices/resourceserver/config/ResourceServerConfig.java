@@ -51,10 +51,10 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/**").access("#oauth2.hasScope('read') and hasRole('ROLE_USER')")
-                .antMatchers(HttpMethod.POST, "/**").access("#oauth2.hasScope('write')")
-                .antMatchers(HttpMethod.PATCH, "/**").access("#oauth2.hasScope('write')")
-                .antMatchers(HttpMethod.PUT, "/**").access("#oauth2.hasScope('write')")
-                .antMatchers(HttpMethod.DELETE, "/**").access("#oauth2.hasScope('write')")
+                .antMatchers(HttpMethod.POST, "/**").access("#oauth2.hasScope('write') and hasAuthority('ROLE_ADMIN')")
+                .antMatchers(HttpMethod.PATCH, "/**").access("#oauth2.hasScope('write') and hasRole('ADMIN')")
+                .antMatchers(HttpMethod.PUT, "/**").access("#oauth2.hasScope('write') and hasAuthority('ROLE_ADMIN')")
+                .antMatchers(HttpMethod.DELETE, "/**").access("#oauth2.hasScope('trust') and hasAuthority('ROLE_ADMIN')")
         .and()
                 .exceptionHandling()
                 .accessDeniedHandler(new OAuth2AccessDeniedHandler());
