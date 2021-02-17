@@ -8,8 +8,9 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="resource-server" />
-        <module name="edge-service" />
         <module name="jwt-auth-server" />
+        <module name="edge-service" />
+        <module name="resource-discovery" />
       </profile>
     </annotationProcessing>
   </component>
@@ -17,6 +18,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="edge-service" options="-parameters" />
       <module name="jwt-auth-server" options="-parameters" />
+      <module name="resource-discovery" options="-parameters" />
       <module name="resource-server" options="-parameters" />
     </option>
   </component>

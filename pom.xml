@@ -21,6 +21,7 @@
         <module>resource-server</module>
         <module>jwt-auth-server</module>
         <module>edge-service</module>
+        <module>resource-discovery</module>
     </modules>
 
 </project>

@@ -1,13 +1,6 @@
 server:
   port: 8081
 
-#spring:
-#  security:
-#    oauth2:
-#      resourceserver:
-#        jwt:
-#          jwk-set-uri: "http://localhost:8080/.well-known/jwks.json"
-
 spring:
   jackson:
     serialization:
@@ -17,3 +10,11 @@ security:
   jwt:
     public-key: classpath:public-key.txt
 
+eureka:
+  instance:
+    hostname: localhost
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.uuid}}
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
+    register-with-eureka: true
