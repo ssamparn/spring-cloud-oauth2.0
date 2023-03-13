@@ -7,10 +7,17 @@
     <groupId>com.spring.security</groupId>
     <artifactId>spring-cloud-oauth2.0</artifactId>
     <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <name>Spring Cloud Oauth2.0</name>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
+
+    <modules>
+        <module>spring-authorization-server</module>
+    </modules>
 
 </project>
