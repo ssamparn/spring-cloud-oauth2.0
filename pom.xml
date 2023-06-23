@@ -19,6 +19,7 @@
     <modules>
         <module>spring-authorization-server</module>
         <module>spring-resource-server</module>
+        <module>spring-oauth2-client</module>
     </modules>
 
 </project>

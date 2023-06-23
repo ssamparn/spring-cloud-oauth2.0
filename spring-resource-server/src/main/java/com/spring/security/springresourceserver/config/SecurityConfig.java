@@ -13,14 +13,15 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
-    private String tokenIssuer;
+    private String tokenIssuerUri;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/products", "/principal").permitAll())
                 .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.decoder(JwtDecoders.fromIssuerLocation(tokenIssuer))))
+                        .jwt(jwt -> jwt.decoder(JwtDecoders.fromIssuerLocation(tokenIssuerUri))))
                 .build();
     }
 }

@@ -1,0 +1,34 @@
+server:
+  port: 9002
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          myoauth2:
+            provider: 'spring'
+            client-id: 'client'
+            client-secret: 'secret'
+            authorization-grant-type: 'authorization_code'
+#            client-name: products-client-credentials
+            scope: 'openid'
+            redirect-uri: http://localhost:9002/login/oauth2/code/myoauth2
+#          products-client-authorization-code:
+#            provider: spring
+#            client-id: client
+#            client-secret: secret
+#            authorization-grant-type: authorization_code
+#            scope: read
+#            client-name: products-client-authorization-code
+#            redirect-uri: http://authorization-server:9002/authorize
+        provider:
+          spring:
+            issuer-uri: http://authorization-server:9000
